@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Book — Strength Ledger</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #10141A; }
+
+.book-root {
+  --bg: #10141A;
+  --panel: #171C24;
+  --panel-2: #1D232D;
+  --paper: #ECE7DA;
+  --text: #E4E1D8;
+  --text-dim: #8B93A1;
+  --amber: #D9A441;
+  --gain: #4F9D69;
+  --load: #C0524A;
+  --rule: #2A313C;
+  background: radial-gradient(ellipse 900px 500px at 50% -10%, #1A212B 0%, var(--bg) 60%);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  padding: 22px 16px 60px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.book-root h1, .book-root h2, .book-root h3 { font-family: 'Fraunces', serif; margin: 0; }
+.book-root .mono { font-family: 'IBM Plex Mono', monospace; }
+
+.bk-header { margin-bottom: 18px; }
+.bk-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.14em; color: var(--amber); text-transform: uppercase; margin-bottom: 6px; }
+.bk-title { font-size: 30px; font-weight: 600; color: var(--paper); letter-spacing: -0.01em; }
+.bk-sub { font-size: 13px; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+
+.bk-guide { background: linear-gradient(135deg, #202834, #171C24); border: 1px solid var(--amber); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.bk-guide h3 { color: var(--paper); font-size: 16px; margin-bottom: 10px; }
+.bk-guide ol { margin: 0; padding-left: 18px; color: var(--text); font-size: 13px; line-height: 1.9; }
+.bk-guide ol b { color: var(--amber); }
+.bk-guide .bk-dismiss { margin-top: 10px; }
+
+.bk-strip { display: flex; gap: 4px; margin: 20px 0 10px; }
+.bk-day { flex: 1; text-align: center; cursor: pointer; user-select: none; }
+.bk-day-label { font-size: 10px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; margin-bottom: 6px; }
+.bk-day-bar { height: 44px; border-radius: 3px; border: 1px solid var(--rule); transition: transform .15s; background: var(--panel); }
+.bk-day-bar:active { transform: scale(0.94); }
+.bk-day-bar.today { border-color: var(--amber); border-width: 2px; }
+.bk-t-rest { background: var(--panel); }
+.bk-t-lift { background: var(--panel-2); border-top: 3px solid var(--paper); }
+.bk-t-tennis { background: var(--panel-2); border-top: 3px solid var(--amber); }
+.bk-t-hiit { background: var(--panel-2); border-top: 3px solid var(--load); }
+
+.bk-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; margin-bottom: 22px; }
+.bk-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.bk-dot { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+.bk-panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 10px; padding: 16px; margin-bottom: 14px; box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset; }
+.bk-panel-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.bk-panel-title { font-size: 18px; font-weight: 600; color: var(--paper); }
+.bk-flag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--load); background: rgba(192,82,74,0.12); border: 1px solid rgba(192,82,74,0.35); padding: 2px 7px; border-radius: 20px; white-space: nowrap; }
+
+.bk-ex { border-top: 1px solid var(--rule); padding: 13px 0; }
+.bk-ex:first-of-type { border-top: none; padding-top: 4px; }
+.bk-ex-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.bk-ex-name { font-size: 14.5px; font-weight: 500; color: var(--text); }
+.bk-ex-cat { font-size: 10px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: .04em; }
+.bk-ex-target { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); white-space: nowrap; }
+.bk-ex-note { font-size: 11px; color: var(--amber); margin-top: -4px; margin-bottom: 8px; font-family: 'IBM Plex Mono', monospace; }
+.bk-ex-note.catchup { color: var(--load); }
+.bk-comment { width: 100%; background: var(--panel-2); border: 1px solid var(--rule); color: var(--text); border-radius: 6px; padding: 10px; font-family: 'Inter', sans-serif; font-size: 13px; resize: vertical; min-height: 44px; margin: 10px 0 4px; }
+.bk-comment:focus { outline: none; border-color: var(--amber); }
+.bk-hist-comment { font-size: 12px; color: var(--paper); margin-top: 5px; font-style: italic; }
+.bk-ex-actions { display: flex; gap: 8px; margin-top: 8px; }
+.bk-link { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--amber); background: none; border: none; cursor: pointer; padding: 0; text-decoration: underline; }
+.bk-link.dim { color: var(--text-dim); }
+
+.bk-sets { display: flex; flex-direction: column; gap: 6px; }
+.bk-set-row { display: grid; grid-template-columns: 20px 1fr 1fr 28px; gap: 8px; align-items: center; }
+.bk-set-idx { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.bk-set-row input { background: var(--panel-2); border: 1px solid var(--rule); color: var(--text); border-radius: 5px; padding: 7px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; width: 100%; }
+.bk-set-row input::placeholder { color: #55606E; }
+.bk-set-row input:focus { outline: none; border-color: var(--amber); }
+.bk-set-check { width: 26px; height: 26px; border-radius: 5px; border: 1px solid var(--rule); background: var(--panel-2); color: var(--gain); font-size: 14px; cursor: pointer; }
+.bk-set-check.done { background: rgba(79,157,105,0.18); border-color: var(--gain); }
+
+.bk-picker { background: var(--panel-2); border: 1px dashed var(--rule); border-radius: 8px; padding: 10px; margin-top: 8px; }
+.bk-picker-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 4px; font-size: 13px; border-bottom: 1px solid var(--rule); cursor: pointer; }
+.bk-picker-item:last-child { border-bottom: none; }
+.bk-picker-item:active { opacity: 0.7; }
+.bk-picker-item span.mono { color: var(--text-dim); font-size: 11px; }
+
+.bk-btn { background: var(--paper); color: var(--bg); border: none; border-radius: 6px; padding: 11px; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13.5px; cursor: pointer; width: 100%; margin-top: 6px; }
+.bk-btn:active { opacity: 0.85; }
+.bk-btn.ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--rule); }
+
+.bk-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.bk-tab { flex: 1; text-align: center; padding: 9px 4px; border-radius: 6px; font-size: 11.5px; font-family: 'IBM Plex Mono', monospace; color: var(--text-dim); background: var(--panel); border: 1px solid var(--rule); cursor: pointer; }
+.bk-tab.active { color: var(--bg); background: var(--paper); font-weight: 600; }
+
+.bk-hist-item { border-top: 1px solid var(--rule); padding: 10px 0; }
+.bk-hist-item:first-child { border-top: none; }
+.bk-hist-date { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--amber); }
+.bk-hist-ex { font-size: 12.5px; color: var(--text-dim); margin-top: 3px; line-height: 1.6; }
+
+.bk-empty { text-align: center; color: var(--text-dim); font-size: 13px; padding: 26px 10px; line-height: 1.7; }
+.bk-field { margin-bottom: 12px; }
+.bk-field label { display: block; font-size: 11px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+.bk-field select, .bk-field input[type=text], .bk-field input[type=password] { width: 100%; background: var(--panel-2); border: 1px solid var(--rule); color: var(--text); border-radius: 5px; padding: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; }
+.bk-field input::placeholder { color: #55606E; }
+
+.bk-lib-cat { margin-bottom: 18px; }
+.bk-lib-cat-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--amber); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+.bk-lib-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-top: 1px solid var(--rule); }
+.bk-lib-item:first-child { border-top: none; }
+.bk-lib-name { font-size: 13.5px; }
+.bk-lib-meta { font-size: 11px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
+.bk-add-btn { background: var(--panel-2); border: 1px solid var(--rule); color: var(--gain); border-radius: 5px; padding: 5px 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; cursor: pointer; white-space: nowrap; }
+.bk-add-btn:active { opacity: 0.7; }
+
+.bk-loading { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 0; font-family: 'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="book-root" id="bookRoot">
+  <div class="bk-loading">Opening the book…</div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById('bookRoot');
+
+  // category key -> label
+  const CATS = { legs: 'Legs', hinge: 'Hinge', push: 'Push', pull: 'Pull', core: 'Core', tennis: 'Tennis' };
+
+  const EXLIB = {
+    legs: [
+      { name: 'Back Squat', unit: 'kg', start: 60, sets: 4, reps: 6 },
+      { name: 'Front Squat', unit: 'kg', start: 40, sets: 3, reps: 8 },
+      { name: 'Leg Press', unit: 'kg', start: 80, sets: 3, reps: 10 },
+      { name: 'Bulgarian Split Squat', unit: 'kg', start: 14, sets: 3, reps: 10 },
+      { name: 'Walking Lunge', unit: 'kg', start: 12, sets: 3, reps: 10 },
+      { name: 'Goblet Squat', unit: 'kg', start: 20, sets: 3, reps: 12 },
+    ],
+    hinge: [
+      { name: 'Deadlift', unit: 'kg', start: 70, sets: 4, reps: 5 },
+      { name: 'Romanian Deadlift', unit: 'kg', start: 50, sets: 3, reps: 8 },
+      { name: 'Trap Bar Deadlift', unit: 'kg', start: 70, sets: 4, reps: 5 },
+      { name: 'Hip Thrust', unit: 'kg', start: 50, sets: 3, reps: 10 },
+      { name: 'Kettlebell Swing', unit: 'kg', start: 16, sets: 3, reps: 15 },
+      { name: 'Single-Leg RDL', unit: 'kg', start: 12, sets: 3, reps: 8 },
+    ],
+    push: [
+      { name: 'Flat Bench Press', unit: 'kg', start: 45, sets: 3, reps: 8 },
+      { name: 'Incline DB Press', unit: 'kg', start: 16, sets: 3, reps: 10 },
+      { name: 'Overhead Press', unit: 'kg', start: 30, sets: 3, reps: 8 },
+      { name: 'Push-Up', unit: 'reps', start: 0, sets: 3, reps: 15, bodyweight: true },
+      { name: 'Dip', unit: 'reps', start: 0, sets: 3, reps: 10, bodyweight: true },
+      { name: 'Landmine Press', unit: 'kg', start: 15, sets: 3, reps: 10 },
+    ],
+    pull: [
+      { name: 'Bent-Over Row', unit: 'kg', start: 40, sets: 3, reps: 8 },
+      { name: 'Lat Pulldown / Pull-up', unit: 'kg', start: 40, sets: 3, reps: 8 },
+      { name: 'Single-Arm DB Row', unit: 'kg', start: 20, sets: 3, reps: 10 },
+      { name: 'Seated Cable Row', unit: 'kg', start: 35, sets: 3, reps: 10 },
+      { name: 'Face Pull', unit: 'kg', start: 12, sets: 3, reps: 15 },
+      { name: 'Band Pull-Apart', unit: 'reps', start: 0, sets: 3, reps: 20, bodyweight: true },
+    ],
+    core: [
+      { name: 'Plank', unit: 'sec', start: 45, sets: 3, reps: 45, bodyweight: true },
+      { name: 'Pallof Press', unit: 'kg', start: 10, sets: 3, reps: 12 },
+      { name: 'Hanging Leg Raise', unit: 'reps', start: 0, sets: 3, reps: 12, bodyweight: true },
+      { name: 'Dead Bug', unit: 'reps', start: 0, sets: 3, reps: 12, bodyweight: true },
+      { name: 'Ab Wheel Rollout', unit: 'reps', start: 0, sets: 3, reps: 10, bodyweight: true },
+    ],
+    tennis: [
+      { name: 'Cable Rotational Chop', unit: 'kg', start: 15, sets: 3, reps: 12 },
+      { name: 'Med Ball Rotational Throw', unit: 'kg', start: 4, sets: 3, reps: 8 },
+      { name: 'Lateral Lunge', unit: 'kg', start: 12, sets: 3, reps: 10 },
+      { name: 'Copenhagen Plank', unit: 'sec', start: 20, sets: 3, reps: 20, bodyweight: true },
+      { name: 'Face Pull', unit: 'kg', start: 12, sets: 3, reps: 15 },
+    ],
+  };
+
+  const TEMPLATES = {
+    A: { label: 'Squat Day', exercises: [
+      { cat: 'legs', name: 'Back Squat', sets: 4, reps: 6, unit: 'kg', start: 60 },
+      { cat: 'push', name: 'Flat Bench Press', sets: 3, reps: 8, unit: 'kg', start: 45 },
+      { cat: 'pull', name: 'Bent-Over Row', sets: 3, reps: 8, unit: 'kg', start: 40 },
+      { cat: 'core', name: 'Plank', sets: 3, reps: 45, unit: 'sec', start: 45, bodyweight: true },
+    ]},
+    B: { label: 'Hinge Day', exercises: [
+      { cat: 'hinge', name: 'Deadlift', sets: 4, reps: 5, unit: 'kg', start: 70 },
+      { cat: 'push', name: 'Overhead Press', sets: 3, reps: 8, unit: 'kg', start: 30 },
+      { cat: 'pull', name: 'Lat Pulldown / Pull-up', sets: 3, reps: 8, unit: 'kg', start: 40 },
+      { cat: 'core', name: 'Pallof Press', sets: 3, reps: 12, unit: 'kg', start: 10 },
+    ]},
+    C: { label: 'Press Day', exercises: [
+      { cat: 'legs', name: 'Front Squat / Leg Press', sets: 3, reps: 8, unit: 'kg', start: 40 },
+      { cat: 'push', name: 'Incline DB Press', sets: 3, reps: 10, unit: 'kg', start: 16 },
+      { cat: 'pull', name: 'Single-Arm DB Row', sets: 3, reps: 10, unit: 'kg', start: 20 },
+      { cat: 'tennis', name: 'Cable Rotational Chop', sets: 3, reps: 12, unit: 'kg', start: 15 },
+      { cat: 'tennis', name: 'Face Pull', sets: 3, reps: 15, unit: 'kg', start: 12 },
+    ]},
+  };
+  const ORDER = ['A','B','C'];
+  const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  let state = {
+    settings: { fasting: '16:8', lastTemplateIdx: -1, guideDismissed: false, ghOwner: '', ghRepo: '', ghPath: 'data/workout-book.json', ghToken: '' },
+    weekTypes: {},
+    sessions: [],
+    active: null,
+  };
+  let tab = 'today';
+  let openPicker = null; // exercise index whose swap-picker is open
+  let ghSha = null;
+  let ghStatus = 'Not synced yet';
+  let ghBusy = false;
+  let genBusy = false;
+  let genError = null;
+
+  function todayStr(d){ d = d || new Date(); return d.toISOString().slice(0,10); }
+  function weekDates(){
+    const arr = [];
+    const now = new Date();
+    const day = now.getDay();
+    const monday = new Date(now); monday.setDate(now.getDate() - ((day+6)%7));
+    for (let i=0;i<7;i++){ const d = new Date(monday); d.setDate(monday.getDate()+i); arr.push(d); }
+    return arr;
+  }
+
+  async function load(){
+    try { const s = await window.storage.get('settings'); if (s) state.settings = Object.assign(state.settings, JSON.parse(s.value)); } catch(e){}
+    try { const w = await window.storage.get('week-types'); if (w) state.weekTypes = JSON.parse(w.value); } catch(e){}
+    try { const s = await window.storage.get('sessions'); if (s) state.sessions = JSON.parse(s.value); } catch(e){}
+    if (ghConfigured()) { render(); await ghPull(true); }
+    render();
+  }
+  async function saveSettings(){ try { await window.storage.set('settings', JSON.stringify(state.settings)); } catch(e){} }
+  async function saveWeekTypes(){ try { await window.storage.set('week-types', JSON.stringify(state.weekTypes)); } catch(e){} }
+  async function saveSessions(){ try { await window.storage.set('sessions', JSON.stringify(state.sessions)); } catch(e){} }
+
+  // --- GitHub sync (same pattern as MJ Cellar) ---
+  function ghConfigured(){
+    const g = state.settings;
+    return !!(g.ghOwner && g.ghRepo && g.ghPath && g.ghToken);
+  }
+  function ghHeaders(){
+    return { 'Authorization': 'token ' + state.settings.ghToken, 'Accept': 'application/vnd.github+json' };
+  }
+  function ghUrl(){
+    const g = state.settings;
+    return `https://api.github.com/repos/${encodeURIComponent(g.ghOwner)}/${encodeURIComponent(g.ghRepo)}/contents/${g.ghPath}`;
+  }
+  function b64encode(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64decode(b64){ return decodeURIComponent(escape(atob(b64.replace(/\n/g,'')))); }
+
+  async function ghPull(silent){
+    if (!ghConfigured()) return false;
+    ghBusy = true; if (!silent) render();
+    try {
+      const res = await fetch(ghUrl(), { headers: ghHeaders() });
+      if (res.status === 404) { ghStatus = 'No file yet — will create on first sync'; ghBusy = false; return false; }
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const file = await res.json();
+      ghSha = file.sha;
+      const data = JSON.parse(b64decode(file.content));
+      if (data.sessions) state.sessions = data.sessions;
+      if (data.weekTypes) state.weekTypes = data.weekTypes;
+      if (data.settingsCore) Object.assign(state.settings, data.settingsCore);
+      await saveSessions(); await saveWeekTypes(); await saveSettings();
+      ghStatus = 'Pulled latest at ' + new Date().toLocaleTimeString();
+      return true;
+    } catch(e){
+      ghStatus = 'Pull failed: ' + e.message;
+      return false;
+    } finally { ghBusy = false; if (!silent) render(); }
+  }
+
+  async function ghPush(){
+    if (!ghConfigured()) return;
+    ghBusy = true; render();
+    try {
+      const payload = {
+        sessions: state.sessions,
+        weekTypes: state.weekTypes,
+        settingsCore: { fasting: state.settings.fasting, lastTemplateIdx: state.settings.lastTemplateIdx, guideDismissed: state.settings.guideDismissed },
+        updatedAt: new Date().toISOString()
+      };
+      const body = { message: 'Update training log — ' + todayStr(), content: b64encode(JSON.stringify(payload, null, 2)) };
+      if (ghSha) body.sha = ghSha;
+      const res = await fetch(ghUrl(), { method: 'PUT', headers: Object.assign({'Content-Type':'application/json'}, ghHeaders()), body: JSON.stringify(body) });
+      if (!res.ok){
+        const err = await res.json().catch(()=>({}));
+        if (res.status === 409 || /sha/i.test(err.message||'')){
+          const r2 = await fetch(ghUrl(), { headers: ghHeaders() });
+          if (r2.ok){ const f2 = await r2.json(); ghSha = f2.sha; return ghPush(); }
+        }
+        throw new Error(err.message || ('HTTP ' + res.status));
+      }
+      const json = await res.json();
+      ghSha = json.content.sha;
+      ghStatus = 'Synced at ' + new Date().toLocaleTimeString();
+    } catch(e){
+      ghStatus = 'Sync failed: ' + e.message;
+    } finally { ghBusy = false; render(); }
+  }
+
+  function nextTemplateKey(){ return ORDER[(state.settings.lastTemplateIdx + 1) % 3]; }
+
+  function tennisLoadFlag(){
+    const t = todayStr();
+    const y = todayStr(new Date(Date.now()-86400000));
+    return state.weekTypes[t] === 'tennis' || state.weekTypes[y] === 'tennis';
+  }
+
+  function lastSessionFor(exName){
+    for (let i = state.sessions.length-1; i>=0; i--){
+      const ex = state.sessions[i].exercises.find(e=>e.name===exName);
+      if (ex) return ex;
+    }
+    return null;
+  }
+
+  function suggestWeight(ex){
+    const last = lastSessionFor(ex.name);
+    if (!last || ex.bodyweight) return ex.start;
+    const validSets = last.sets.filter(s=>s.weight!=null);
+    if (!validSets.length) return ex.start;
+    const hitAll = validSets.every(s => (s.reps||0) >= ex.reps);
+    const lastWeight = Math.max(...validSets.map(s=>s.weight||0));
+    if (!lastWeight) return ex.start;
+    if (hitAll) return Math.round((lastWeight + (ex.unit==='kg'?2.5:5))*2)/2;
+    return lastWeight;
+  }
+
+  function categoriesInSession(s){
+    return new Set(s.exercises.filter(ex => ex.sets.some(st => st.weight!=null || st.reps!=null)).map(ex => ex.cat));
+  }
+
+  function daysSinceCategory(cat){
+    for (let i = state.sessions.length-1; i>=0; i--){
+      const s = state.sessions[i];
+      if (categoriesInSession(s).has(cat)){
+        return Math.round((new Date(todayStr()) - new Date(s.date)) / 86400000);
+      }
+    }
+    return null; // never trained
+  }
+
+  function makeSessionExercise(tplEx, trimIfLoaded){
+    let numSets = tplEx.sets;
+    let note = null;
+    if (trimIfLoaded && !tplEx.bodyweight && tplEx.cat !== 'tennis' && tplEx.cat !== 'core'){
+      numSets = Math.max(2, tplEx.sets - 1);
+      note = 'Trimmed a set — tennis load';
+    }
+    return {
+      name: tplEx.name, unit: tplEx.unit, cat: tplEx.cat, targetReps: tplEx.reps, note,
+      suggested: suggestWeight(tplEx), isExtra: false,
+      sets: Array.from({length: numSets}, () => ({ reps: null, weight: null, done: false }))
+    };
+  }
+
+  function buildActiveSession(){
+    const key = nextTemplateKey();
+    const tpl = TEMPLATES[key];
+    const reduceLoad = tennisLoadFlag();
+    const exercises = tpl.exercises.map(e => makeSessionExercise(e, reduceLoad));
+
+    // catch-up: if a main movement pattern hasn't been hit in a while (missed session), add it back in
+    const presentCats = new Set(exercises.map(e => e.cat));
+    const mainCats = ['legs','hinge','push','pull','core'];
+    mainCats.forEach(cat => {
+      if (presentCats.has(cat)) return;
+      const days = daysSinceCategory(cat);
+      if (days !== null && days >= 6){
+        const lib = EXLIB[cat][0];
+        if (lib){
+          exercises.push({
+            name: lib.name, unit: lib.unit, cat, targetReps: lib.reps,
+            note: `Catch-up — ${days}d since last ${CATS[cat]}`, catchup: true, isExtra: true,
+            suggested: suggestWeight(lib),
+            sets: Array.from({length: Math.max(2, lib.sets-1)}, () => ({ reps: null, weight: null, done: false }))
+          });
+        }
+      }
+    });
+
+    return { date: todayStr(), template: key, label: tpl.label, tennisFlag: reduceLoad, comment: '', exercises };
+  }
+
+  function ensureActive(){
+    if (!state.active || state.active.date !== todayStr()){
+      state.active = buildActiveSession();
+    }
+  }
+
+  async function logSession(){
+    const s = state.active;
+    state.sessions.push(s);
+    state.settings.lastTemplateIdx = ORDER.indexOf(s.template);
+    await saveSessions(); await saveSettings();
+    state.active = null;
+    render();
+    if (ghConfigured()) ghPush();
+  }
+
+  async function generateWorkout(){
+    ensureActive();
+    genBusy = true; genError = null; render();
+    try {
+      const history = state.sessions.slice(-12).map(s => ({
+        date: s.date, label: s.label, tennisFlag: s.tennisFlag, comment: s.comment || undefined,
+        exercises: s.exercises.map(ex => ({
+          name: ex.name, cat: ex.cat, unit: ex.unit, targetReps: ex.targetReps,
+          sets: ex.sets.filter(st => st.weight != null || st.reps != null).map(st => ({ reps: st.reps, weight: st.weight }))
+        }))
+      }));
+      const week = weekDates().map(d => ({ date: todayStr(d), type: state.weekTypes[todayStr(d)] || 'rest' }));
+      const todayType = state.weekTypes[todayStr()] || 'rest';
+
+      const prompt = `You are a strength coach programming today's session for an athlete who also plays competitive tennis and follows ${state.settings.fasting} intermittent fasting.
+
+Training history, most recent last (JSON): ${JSON.stringify(history)}
+
+This week's day types: ${JSON.stringify(week)}
+Today's day type: ${todayType}
+
+Rules:
+- Full-body session, 4-6 exercises, drawn from movement patterns: legs, hinge, push, pull, core, tennis (rotational/shoulder-health accessory work).
+- Progress the weight on any lift where the last logged sets all met or beat target reps; hold weight if they didn't; use a sensible starting weight if there's no history for it.
+- If a movement pattern hasn't appeared in a logged session in 6+ days, include it today and say so in that exercise's note.
+- If tennis was played today or yesterday, trim volume on heavy lower-body/compound lifts by roughly one set and note it.
+- Read any comments in the history (soreness, missed sessions, how it felt) and adjust today's choices accordingly — explain your reasoning briefly in "rationale".
+- Units: kg for loaded lifts, "reps" for bodyweight movements, "sec" for timed holds.
+
+Respond with ONLY valid JSON, no markdown fences, no commentary, in this exact shape:
+{"label":"string","rationale":"1-2 sentences","tennisFlag":boolean,"exercises":[{"name":"string","cat":"legs|hinge|push|pull|core|tennis","unit":"kg|reps|sec","sets":number,"targetReps":number,"suggestedWeight":number,"note":"string or empty"}]}`;
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 1200,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const textBlock = (data.content || []).find(b => b.type === 'text');
+      if (!textBlock) throw new Error('no response text');
+      const clean = textBlock.text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      if (!parsed.exercises || !parsed.exercises.length) throw new Error('empty plan returned');
+
+      state.active.label = parsed.label || state.active.label;
+      state.active.tennisFlag = !!parsed.tennisFlag;
+      state.active.rationale = parsed.rationale || '';
+      state.active.generated = true;
+      state.active.exercises = parsed.exercises.map(e => ({
+        name: e.name, unit: e.unit || 'kg', cat: e.cat || 'core', targetReps: e.targetReps || 10,
+        note: e.note || null, catchup: false, isExtra: true,
+        suggested: e.suggestedWeight != null ? e.suggestedWeight : 0,
+        sets: Array.from({ length: Math.max(1, e.sets || 3) }, () => ({ reps: null, weight: null, done: false }))
+      }));
+    } catch(err){
+      genError = 'Generate failed — ' + err.message + '. Kept your current session.';
+    } finally {
+      genBusy = false; render();
+    }
+  }
+
+  function cycleDayType(dateStr){
+    const order = ['rest','lift','tennis','hiit'];
+    const cur = state.weekTypes[dateStr] || 'rest';
+    state.weekTypes[dateStr] = order[(order.indexOf(cur)+1) % order.length];
+    saveWeekTypes();
+    render();
+    if (ghConfigured()) ghPush();
+  }
+
+  function fmtSets(ex){
+    return ex.sets.filter(s=>s.weight!=null || s.reps!=null).map(s => `${s.reps||'-'}×${s.weight??'-'}${ex.unit==='sec'?'s':(ex.unit==='reps'?'':ex.unit)}`).join(', ') || '—';
+  }
+
+  function swapExercise(ei, libEx){
+    const cur = state.active.exercises[ei];
+    state.active.exercises[ei] = {
+      name: libEx.name, unit: libEx.unit, cat: cur.cat, targetReps: libEx.reps, note: cur.note, isExtra: cur.isExtra,
+      suggested: suggestWeight(libEx),
+      sets: Array.from({length: cur.sets.length}, () => ({ reps: null, weight: null, done: false }))
+    };
+    openPicker = null;
+    render();
+  }
+
+  function addFromLibrary(libEx, cat){
+    state.active.exercises.push({
+      name: libEx.name, unit: libEx.unit, cat, targetReps: libEx.reps, note: null, isExtra: true,
+      suggested: suggestWeight(libEx),
+      sets: Array.from({length: libEx.sets}, () => ({ reps: null, weight: null, done: false }))
+    });
+    render();
+  }
+
+  function removeExercise(ei){
+    state.active.exercises.splice(ei,1);
+    render();
+  }
+
+  function render(){
+    ensureActive();
+    const week = weekDates();
+    const tstr = todayStr();
+    const hasAnyWeekType = Object.keys(state.weekTypes).length > 0;
+    const hasAnySession = state.sessions.length > 0;
+
+    let stripHtml = week.map(d => {
+      const ds = todayStr(d);
+      const type = state.weekTypes[ds] || 'rest';
+      const isToday = ds === tstr;
+      return `<div class="bk-day" onclick="bkCycle('${ds}')">
+        <div class="bk-day-label">${DAYS[d.getDay()]}</div>
+        <div class="bk-day-bar bk-t-${type} ${isToday?'today':''}"></div>
+      </div>`;
+    }).join('');
+
+    let guideHtml = '';
+    if (!state.settings.guideDismissed){
+      guideHtml = `<div class="bk-guide">
+        <h3>How this works</h3>
+        <ol>
+          <li><b>Tap the strip</b> below to mark this week — cycles Rest → Lift → Tennis → HIIT per day.</li>
+          <li><b>Today</b> proposes a full-body session, rotating three focuses. Weight is pre-filled from your last log.</li>
+          <li>After each set, type the <b>weight</b> and <b>reps</b> you actually did, tap the ✓, then <b>Log session</b> when done.</li>
+          <li>Don't like an exercise? Tap <b>swap</b> to pick another from the same movement pattern, or open <b>Exercises</b> to browse the full library and add extras.</li>
+          <li>Play tennis today or yesterday? The next session auto-trims a set on the heavy lifts — flagged in amber.</li>
+          <li>Miss a workout? If a movement pattern (legs, push, pull, hinge, core) hasn't shown up in 6+ days, the next session adds it back in — flagged in red as a catch-up.</li>
+          <li>Leave a <b>comment</b> at the bottom of each session — soreness, how it felt, why you cut it short. It's saved with that day's log.</li>
+          <li>In <b>Settings</b>, connect a GitHub repo + token and every log syncs there — so I can read your real training history in a chat, not just rule-based suggestions here.</li>
+          <li>Hit <b>⚡ Generate from my log</b> on the Today tab and I'll review your actual history — weights, missed sessions, comments — and write today's session live, right in the app.</li>
+        </ol>
+        <button class="bk-btn ghost bk-dismiss" onclick="bkDismissGuide()">Got it, hide this</button>
+      </div>`;
+    }
+
+    let tabsHtml = `
+      <div class="bk-tabs">
+        <div class="bk-tab ${tab==='today'?'active':''}" onclick="bkTab('today')">Today</div>
+        <div class="bk-tab ${tab==='exercises'?'active':''}" onclick="bkTab('exercises')">Exercises</div>
+        <div class="bk-tab ${tab==='history'?'active':''}" onclick="bkTab('history')">History</div>
+        <div class="bk-tab ${tab==='settings'?'active':''}" onclick="bkTab('settings')">Settings</div>
+      </div>`;
+
+    let body = '';
+    if (tab === 'today'){
+      const s = state.active;
+      const alreadyLogged = state.sessions.some(x=>x.date===tstr);
+      if (alreadyLogged){
+        body = `<div class="bk-panel"><div class="bk-empty">Session logged for today. Nice work.<br><span class="mono" style="color:var(--amber)">Next session: ${TEMPLATES[nextTemplateKey()].label}</span></div></div>`;
+      } else {
+        body = `<div class="bk-panel">
+          <div class="bk-panel-head">
+            <div class="bk-panel-title">${s.label}</div>
+            ${s.tennisFlag ? '<div class="bk-flag">tennis load</div>' : ''}
+          </div>
+          <div class="bk-sub" style="margin-bottom:10px;">${s.generated ? (s.rationale || 'Generated from your training log.') : `Full-body, position ${s.template} in rotation`}</div>
+          <button class="bk-btn ghost" ${genBusy?'disabled':''} onclick="bkGenerate()" style="margin-bottom:14px;">${genBusy ? 'Reviewing your log…' : (s.generated ? '⚡ Regenerate' : '⚡ Generate from my log')}</button>
+          ${genError ? `<div class="bk-ex-note" style="margin-bottom:10px;">${genError}</div>` : ''}
+          ${s.exercises.map((ex,ei) => `
+            <div class="bk-ex">
+              <div class="bk-ex-head">
+                <div>
+                  <div class="bk-ex-name">${ex.name}</div>
+                  <div class="bk-ex-cat">${CATS[ex.cat]||''}</div>
+                </div>
+                <div class="bk-ex-target mono">${ex.sets.length}×${ex.targetReps} @ ${ex.suggested}${ex.unit==='sec'?'s':(ex.unit==='reps'?'':ex.unit)}</div>
+              </div>
+              ${ex.note ? `<div class="bk-ex-note ${ex.catchup?'catchup':''}">${ex.note}</div>` : ''}
+              <div class="bk-sets">
+                ${ex.sets.map((st,si) => `
+                  <div class="bk-set-row">
+                    <div class="bk-set-idx">${si+1}</div>
+                    <input type="number" inputmode="decimal" placeholder="${ex.unit==='sec'?'sec':(ex.unit==='reps'?'—':ex.unit)}" value="${st.weight??''}" onchange="bkSetVal(${ei},${si},'weight',this.value)" />
+                    <input type="number" inputmode="numeric" placeholder="reps" value="${st.reps??''}" onchange="bkSetVal(${ei},${si},'reps',this.value)" />
+                    <button class="bk-set-check ${st.done?'done':''}" onclick="bkToggleDone(${ei},${si})">${st.done?'✓':''}</button>
+                  </div>
+                `).join('')}
+              </div>
+              <div class="bk-ex-actions">
+                <button class="bk-link" onclick="bkOpenPicker(${ei})">swap</button>
+                ${ex.isExtra ? `<button class="bk-link dim" onclick="bkRemoveEx(${ei})">remove</button>` : ''}
+              </div>
+              ${openPicker === ei ? `
+                <div class="bk-picker">
+                  ${(EXLIB[ex.cat]||[]).map(le => `
+                    <div class="bk-picker-item" onclick="bkSwap(${ei}, ${JSON.stringify(le.name).replace(/"/g,'&quot;')})">
+                      <span>${le.name}</span><span class="mono">${le.sets}×${le.reps}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `).join('')}
+          <button class="bk-btn ghost" onclick="bkTab('exercises')">+ Add exercise from library</button>
+          <textarea class="bk-comment" placeholder="Comment on today (how it felt, soreness, why you cut it short...)" oninput="bkComment(this.value)">${s.comment||''}</textarea>
+          <button class="bk-btn" onclick="bkLog()">Log session</button>
+        </div>`;
+      }
+    } else if (tab === 'exercises'){
+      body = `<div class="bk-panel">
+        <div class="bk-sub" style="margin-bottom:14px;">Browse the full library. Tap <span class="mono" style="color:var(--gain)">add</span> to drop any of these into today's session.</div>
+        ${Object.keys(EXLIB).map(cat => `
+          <div class="bk-lib-cat">
+            <div class="bk-lib-cat-title">${CATS[cat]}</div>
+            ${EXLIB[cat].map(le => `
+              <div class="bk-lib-item">
+                <div>
+                  <div class="bk-lib-name">${le.name}</div>
+                  <div class="bk-lib-meta">${le.sets}×${le.reps}${le.bodyweight ? ' · bodyweight' : ' · start ' + le.start + le.unit}</div>
+                </div>
+                <button class="bk-add-btn" onclick="bkAddLib('${cat}', ${JSON.stringify(le.name).replace(/"/g,'&quot;')})">add</button>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>`;
+    } else if (tab === 'history'){
+      if (!hasAnySession){
+        body = `<div class="bk-panel"><div class="bk-empty">No sessions logged yet. Log your first one from the Today tab and it'll show up here.</div></div>`;
+      } else {
+        const rev = [...state.sessions].reverse().slice(0,20);
+        body = `<div class="bk-panel">${rev.map(s => `
+          <div class="bk-hist-item">
+            <div class="bk-hist-date">${s.date} · ${s.label}${s.tennisFlag?' · tennis load':''}</div>
+            <div class="bk-hist-ex">${s.exercises.map(ex=>`${ex.name}: ${fmtSets(ex)}`).join('<br>')}</div>
+            ${s.comment ? `<div class="bk-hist-comment">"${s.comment}"</div>` : ''}
+          </div>
+        `).join('')}</div>`;
+      }
+    } else if (tab === 'settings'){
+      const g = state.settings;
+      body = `<div class="bk-panel">
+        <div class="bk-field">
+          <label>Fasting protocol</label>
+          <select onchange="bkSetting('fasting', this.value)">
+            ${['16:8','18:6','none'].map(o=>`<option value="${o}" ${state.settings.fasting===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div class="bk-sub">Tap a day on the strip to mark it Lift / Tennis / HIIT / Rest. The next session auto-trims volume if tennis was played today or yesterday.</div>
+        <button class="bk-btn ghost" style="margin-top:16px;" onclick="bkShowGuide()">Show instructions again</button>
+        <button class="bk-btn ghost" style="margin-top:8px;" onclick="bkReset()">Reset all data</button>
+      </div>
+
+      <div class="bk-panel">
+        <div class="bk-panel-title" style="margin-bottom:6px;">GitHub sync</div>
+        <div class="bk-sub" style="margin-bottom:14px;">Same pattern as MJ Cellar — your log gets written to a JSON file in a repo, so it can be read from a chat, not just this page.</div>
+        <div class="bk-field"><label>GitHub username / org</label><input type="text" value="${g.ghOwner}" placeholder="e.g. mani" onchange="bkSetting('ghOwner', this.value.trim())" /></div>
+        <div class="bk-field"><label>Repo name</label><input type="text" value="${g.ghRepo}" placeholder="e.g. workout-book" onchange="bkSetting('ghRepo', this.value.trim())" /></div>
+        <div class="bk-field"><label>File path in repo</label><input type="text" value="${g.ghPath}" onchange="bkSetting('ghPath', this.value.trim())" /></div>
+        <div class="bk-field"><label>Personal access token</label><input type="password" value="${g.ghToken}" placeholder="repo-scoped token" onchange="bkSetting('ghToken', this.value.trim())" /></div>
+        <div class="bk-sub mono" style="margin-bottom:10px;">${ghBusy ? 'Working…' : ghStatus}</div>
+        <button class="bk-btn ghost" ${ghBusy?'disabled':''} onclick="bkGhPull()">Pull latest from GitHub</button>
+        <button class="bk-btn" ${ghBusy?'disabled':''} onclick="bkGhPush()">Sync now</button>
+      </div>`;
+    }
+
+    root.innerHTML = `
+      <div class="bk-header">
+        <div class="bk-eyebrow">Strength Ledger</div>
+        <div class="bk-title">The Book</div>
+        <div class="bk-sub">3× full-body, built around your tennis week and ${state.settings.fasting} window${!hasAnyWeekType?' — mark today on the strip below to start':''}</div>
+      </div>
+      ${guideHtml}
+      <div class="bk-strip">${stripHtml}</div>
+      <div class="bk-legend">
+        <span><span class="bk-dot" style="background:var(--paper)"></span>Lift</span>
+        <span><span class="bk-dot" style="background:var(--amber)"></span>Tennis</span>
+        <span><span class="bk-dot" style="background:var(--load)"></span>HIIT</span>
+        <span><span class="bk-dot" style="background:var(--panel-2);border:1px solid var(--rule)"></span>Rest</span>
+      </div>
+      ${tabsHtml}
+      ${body}
+    `;
+  }
+
+  window.bkCycle = cycleDayType;
+  window.bkTab = (t) => { tab = t; openPicker = null; render(); };
+  window.bkSetVal = (ei, si, field, val) => {
+    const v = val === '' ? null : Number(val);
+    state.active.exercises[ei].sets[si][field] = v;
+  };
+  window.bkToggleDone = (ei, si) => {
+    state.active.exercises[ei].sets[si].done = !state.active.exercises[ei].sets[si].done;
+    render();
+  };
+  window.bkOpenPicker = (ei) => { openPicker = (openPicker === ei) ? null : ei; render(); };
+  window.bkGenerate = generateWorkout;
+  window.bkComment = (val) => { state.active.comment = val; };
+  window.bkSwap = (ei, name) => {
+    const cat = state.active.exercises[ei].cat;
+    const libEx = (EXLIB[cat]||[]).find(e=>e.name===name);
+    if (libEx) swapExercise(ei, libEx);
+  };
+  window.bkAddLib = (cat, name) => {
+    const libEx = (EXLIB[cat]||[]).find(e=>e.name===name);
+    if (libEx) { addFromLibrary(libEx, cat); tab='today'; render(); }
+  };
+  window.bkRemoveEx = removeExercise;
+  window.bkLog = logSession;
+  window.bkSetting = (k, v) => { state.settings[k] = v; saveSettings(); render(); };
+  window.bkGhPull = () => ghPull(false);
+  window.bkGhPush = () => ghPush();
+  window.bkDismissGuide = () => { state.settings.guideDismissed = true; saveSettings(); render(); };
+  window.bkShowGuide = () => { state.settings.guideDismissed = false; saveSettings(); tab='today'; render(); };
+  window.bkReset = async () => {
+    if (!confirm('Clear all logged sessions and settings?')) return;
+    try {
+      await window.storage.set('settings', JSON.stringify({fasting:'16:8', lastTemplateIdx:-1, guideDismissed:false}));
+      await window.storage.set('week-types', JSON.stringify({}));
+      await window.storage.set('sessions', JSON.stringify([]));
+    } catch(e){}
+    location.reload();
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>
